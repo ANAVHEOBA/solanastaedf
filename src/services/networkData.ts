@@ -1,36 +1,16 @@
 import { ENDPOINTS } from '@/lib/constants/endpoints';
-import { TransactionResponse, TransactionDetailResponse, TransactionActionsResponse, BlockResponse, BlockTransactionsResponse, BlockDetailResponse, MarketResponse, MarketInfoResponse, MarketVolumeResponse } from '@/types/network';
-
-export const fetchLastBlocks = async (limit: number = 10): Promise<BlockResponse> => {
-  const response = await fetch(`${ENDPOINTS.BLOCKS.LAST}?limit=${limit}`);
-  if (!response.ok) {
-    throw new Error('Failed to fetch blocks');
-  }
-  return response.json();
-};
-
-export const fetchBlockDetail = async (block: number): Promise<BlockDetailResponse> => {
-  const response = await fetch(`${ENDPOINTS.BLOCKS.DETAIL}?block=${block}`);
-  if (!response.ok) {
-    throw new Error('Failed to fetch block detail');
-  }
-  return response.json();
-};
-
-export const fetchBlockTransactions = async (
-  block: number,
-  page: number = 1,
-  pageSize: number = 10,
-  excludeVote: boolean = true
-): Promise<BlockTransactionsResponse> => {
-  const response = await fetch(
-    `${ENDPOINTS.BLOCKS.TRANSACTIONS}?block=${block}&page=${page}&page_size=${pageSize}&exclude_vote=${excludeVote}`
-  );
-  if (!response.ok) {
-    throw new Error('Failed to fetch block transactions');
-  }
-  return response.json();
-};
+import { 
+  TransactionResponse, 
+  TransactionDetailResponse, 
+  TransactionActionsResponse,
+  AuthResponse,
+  AuthCredentials,
+  WatchlistResponse,
+  WatchlistRequest,
+  WatchlistItemsResponse,
+  WatchlistDeleteResponse,
+  TrendingTokensResponse
+} from '@/types/network';
 
 export const fetchLastTransactions = async (limit: number = 10): Promise<TransactionResponse> => {
   const response = await fetch(`${ENDPOINTS.TRANSACTIONS.LAST}?limit=${limit}`);
@@ -56,39 +36,104 @@ export const fetchTransactionActions = async (txHash: string): Promise<Transacti
   return response.json();
 };
 
-export const fetchMarketList = async (
-  page: number = 1,
-  pageSize: number = 10,
-  sortBy: string = 'created_time',
-  sortOrder: string = 'desc'
-): Promise<MarketResponse> => {
-  const response = await fetch(
-    `${ENDPOINTS.MARKET.LIST}?page=${page}&page_size=${pageSize}&sort_by=${sortBy}&sort_order=${sortOrder}`
-  );
+export const register = async (credentials: AuthCredentials): Promise<AuthResponse> => {
+  const response = await fetch(ENDPOINTS.AUTH.REGISTER, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(credentials),
+  });
+  
+  const data = await response.json();
+  
   if (!response.ok) {
-    throw new Error('Failed to fetch market list');
+    const errorMessage = data.message || 'Failed to register';
+    throw new Error(errorMessage);
+  }
+  
+  return data;
+};
+
+export const login = async (credentials: AuthCredentials): Promise<AuthResponse> => {
+  const response = await fetch(ENDPOINTS.AUTH.LOGIN, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(credentials),
+  });
+  
+  const data = await response.json();
+  
+  if (!response.ok) {
+    const errorMessage = data.message || 'Failed to login';
+    throw new Error(errorMessage);
+  }
+  
+  return data;
+};
+
+export const addToWatchlist = async (token: string, data: WatchlistRequest): Promise<WatchlistResponse> => {
+  const response = await fetch(ENDPOINTS.WHALE_MONITOR.WATCHLIST, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`,
+    },
+    body: JSON.stringify(data),
+  });
+  
+  const responseData = await response.json();
+  
+  if (!response.ok) {
+    const errorMessage = responseData.message || 'Failed to add to watchlist';
+    throw new Error(errorMessage);
+  }
+  
+  return responseData;
+};
+
+export const fetchWatchlist = async (token: string): Promise<WatchlistItemsResponse> => {
+  const response = await fetch(ENDPOINTS.WHALE_MONITOR.WATCHLIST, {
+    method: 'GET',
+    headers: {
+      'Authorization': `Bearer ${token}`,
+    },
+  });
+  
+  const responseData = await response.json();
+  
+  if (!response.ok) {
+    const errorMessage = responseData.message || 'Failed to fetch watchlist';
+    throw new Error(errorMessage);
+  }
+  
+  return responseData;
+};
+
+export const deleteWatchlistItem = async (token: string, id: string): Promise<WatchlistDeleteResponse> => {
+  const response = await fetch(ENDPOINTS.WHALE_MONITOR.WATCHLIST_ITEM(id), {
+    method: 'DELETE',
+    headers: {
+      'Authorization': `Bearer ${token}`,
+    },
+  });
+  
+  const responseData = await response.json();
+  
+  if (!response.ok) {
+    const errorMessage = responseData.message || 'Failed to delete watchlist item';
+    throw new Error(errorMessage);
+  }
+  
+  return responseData;
+};
+
+export const fetchTrendingTokens = async (limit: number = 10): Promise<TrendingTokensResponse> => {
+  const response = await fetch(`${ENDPOINTS.TOKENS.TRENDING}?limit=${limit}`);
+  if (!response.ok) {
+    throw new Error('Failed to fetch trending tokens');
   }
   return response.json();
 };
-
-export const fetchMarketInfo = async (address: string): Promise<MarketInfoResponse> => {
-  const response = await fetch(`${ENDPOINTS.MARKET.INFO}?address=${address}`);
-  if (!response.ok) {
-    throw new Error('Failed to fetch market info');
-  }
-  return response.json();
-};
-
-export const fetchMarketVolume = async (
-  address: string,
-  timeRange: string[] = []
-): Promise<MarketVolumeResponse> => {
-  const timeParams = timeRange.map(t => `time[]=${t}`).join('&');
-  const response = await fetch(
-    `${ENDPOINTS.MARKET.VOLUME}?address=${address}${timeParams ? `&${timeParams}` : ''}`
-  );
-  if (!response.ok) {
-    throw new Error('Failed to fetch market volume');
-  }
-  return response.json();
-}; 

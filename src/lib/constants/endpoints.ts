@@ -1,19 +1,20 @@
 const BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
 export const ENDPOINTS = {
-  BLOCKS: {
-    LAST: `${BASE_URL}/api/v1/solscan/block/last`,
-    TRANSACTIONS: `${BASE_URL}/api/v1/solscan/block/transactions`,
-    DETAIL: `${BASE_URL}/api/v1/solscan/block/detail`,
+  AUTH: {
+    REGISTER: `${BASE_URL}/api/v1/auth/register`,
+    LOGIN: `${BASE_URL}/api/v1/auth/login`,
   },
   TRANSACTIONS: {
     LAST: `${BASE_URL}/api/v1/solscan/transaction/last`,
     DETAIL: `${BASE_URL}/api/v1/solscan/transaction/detail`,
     ACTIONS: `${BASE_URL}/api/v1/solscan/transaction/actions`,
   },
-  MARKET: {
-    LIST: `${BASE_URL}/api/v1/solscan/market/list`,
-    INFO: `${BASE_URL}/api/v1/solscan/market/info`,
-    VOLUME: `${BASE_URL}/api/v1/solscan/market/volume`,
+  WHALE_MONITOR: {
+    WATCHLIST: `${BASE_URL}/api/v1/whale-monitor/watchlist`,
+    WATCHLIST_ITEM: (id: string) => `${BASE_URL}/api/v1/whale-monitor/watchlist/${id}`,
+  },
+  TOKENS: {
+    TRENDING: `${BASE_URL}/api/v1/solscan/token/trending`,
   },
 }; 

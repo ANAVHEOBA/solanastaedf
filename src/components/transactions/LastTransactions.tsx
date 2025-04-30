@@ -1,15 +1,14 @@
 "use client";
 
-import { Transaction, TransactionDetail, TransactionActions } from '@/types/network';
-import { fetchLastTransactions, fetchTransactionDetail, fetchTransactionActions } from '@/services/networkData';
+import { Transaction, TransactionDetail } from '@/types/network';
+import { fetchLastTransactions, fetchTransactionDetail } from '@/services/networkData';
 import { useState, useEffect } from 'react';
 
 interface LastTransactionsProps {
   onTransactionSelect: (transaction: TransactionDetail | null) => void;
-  onActionsSelect: (actions: TransactionActions | null) => void;
 }
 
-export function LastTransactions({ onTransactionSelect, onActionsSelect }: LastTransactionsProps) {
+export function LastTransactions({ onTransactionSelect }: LastTransactionsProps) {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -37,12 +36,8 @@ export function LastTransactions({ onTransactionSelect, onActionsSelect }: LastT
   const handleTransactionClick = async (hash: string) => {
     setDetailLoading(true);
     try {
-      const [detailResponse, actionsResponse] = await Promise.all([
-        fetchTransactionDetail(hash),
-        fetchTransactionActions(hash)
-      ]);
-      onTransactionSelect(detailResponse.data);
-      onActionsSelect(actionsResponse.data);
+      const { data } = await fetchTransactionDetail(hash);
+      onTransactionSelect(data);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to load transaction details');
     } finally {

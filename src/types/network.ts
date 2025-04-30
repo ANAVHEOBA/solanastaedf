@@ -128,6 +128,27 @@ export interface TransactionDetailResponse {
   };
 }
 
+export interface AuthUser {
+  id: string;
+  email: string;
+}
+
+export interface AuthResponse {
+  success: boolean;
+  message: string;
+  data: {
+    message: string;
+    user?: AuthUser;
+    token?: string;
+    expiresIn?: string;
+  };
+}
+
+export interface AuthCredentials {
+  email: string;
+  password: string;
+}
+
 export interface TokenSwapData {
   amm_id: string;
   amm_authoriy: string | null;
@@ -208,100 +229,60 @@ export interface TransactionActionsResponse {
   };
 }
 
-export interface Block {
-  blockhash: string;
-  fee_rewards: number;
-  transactions_count: number;
-  current_slot: number;
-  block_height: number;
-  block_time: number;
-  time: string;
-  parent_slot: number;
-  previous_block_hash: string;
+export interface WatchlistItem {
+  id: string;
+  userId: string;
+  address: string;
+  label: string;
+  type: 'account' | 'token';
+  notes: string;
+  createdAt: string;
+  updatedAt: string;
+  tokenSymbol?: string;
+  tokenName?: string;
+  tokenDecimals?: number;
 }
 
-export interface BlockResponse {
+export interface WatchlistResponse {
   success: boolean;
-  data: Block[];
-  metadata: Record<string, unknown>;
-}
-
-export interface BlockTransactionsResponse {
-  success: boolean;
+  message: string;
   data: {
-    total: number;
-    transactions: Transaction[];
+    item: WatchlistItem;
   };
-  metadata: Record<string, unknown>;
 }
 
-export interface BlockDetail {
-  slot: number;
-  blockhash: string;
-  totalMevRewards: string;
-  fee_rewards: number;
-  transactions_count: number;
-  block_height: number;
-  block_time: number;
-  time: string;
-  parent_slot: number;
-  previous_block_hash: string;
+export interface WatchlistRequest {
+  address: string;
+  label: string;
+  type: 'account' | 'token';
+  notes: string;
 }
 
-export interface BlockDetailResponse {
+export interface WatchlistItemsResponse {
   success: boolean;
-  data: BlockDetail;
-  metadata: Record<string, unknown>;
+  message: string;
+  data: {
+    items: WatchlistItem[];
+  };
 }
 
-export interface MarketPool {
-  pool_address: string;
-  program_id: string;
-  token1: string;
-  token1_account: string;
-  token2: string;
-  token2_account: string;
-  created_time: number;
-}
-
-export interface MarketResponse {
+export interface WatchlistDeleteResponse {
   success: boolean;
-  data: MarketPool[];
-  metadata: Record<string, unknown>;
+  message: string;
+  data: {
+    message: string;
+  };
 }
 
-export interface MarketTokenInfo {
-  token: string;
-  token_account: string;
-  amount: number;
+export interface TrendingToken {
+  address: string;
+  decimals?: number;
+  name: string;
+  symbol: string;
 }
 
-export interface MarketInfo {
-  pool_address: string;
-  program_id: string;
-  tokens_info: MarketTokenInfo[];
-  create_tx_hash: string;
-  create_block_time: number;
-  creator: string;
-}
-
-export interface MarketInfoResponse {
+export interface TrendingTokensResponse {
   success: boolean;
-  data: MarketInfo;
-  metadata: Record<string, unknown>;
-}
-
-export interface MarketVolume {
-  pool_address: string;
-  program_id: string;
-  total_volume_24h: number;
-  total_volume_change_24h: number;
-  total_trades_24h: number;
-  total_trades_change_24h: number;
-}
-
-export interface MarketVolumeResponse {
-  success: boolean;
-  data: MarketVolume;
+  data: TrendingToken[];
   metadata: Record<string, unknown>;
 } 

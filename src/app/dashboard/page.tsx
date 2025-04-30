@@ -1,17 +1,14 @@
 "use client";
 
 import { useState, useEffect } from 'react';
-import { LastBlocks } from '@/components/blocks/LastBlocks';
 import { LastTransactions } from '@/components/transactions/LastTransactions';
 import { TransactionDetail } from '@/components/transactions/TransactionDetail';
-import { TransactionActions } from '@/components/transactions/TransactionActions';
-import { MarketList } from '@/components/market/MarketList';
-import { TransactionDetail as TransactionDetailType, TransactionActions as TransactionActionsType } from '@/types/network';
+import { TrendingTokens } from '@/components/tokens/TrendingTokens';
+import { TransactionDetail as TransactionDetailType } from '@/types/network';
 
 export default function DashboardPage() {
   const [currentTime, setCurrentTime] = useState<string>('');
   const [selectedTransaction, setSelectedTransaction] = useState<TransactionDetailType | null>(null);
-  const [selectedActions, setSelectedActions] = useState<TransactionActionsType | null>(null);
 
   useEffect(() => {
     setCurrentTime(new Date().toLocaleTimeString());
@@ -20,14 +17,6 @@ export default function DashboardPage() {
     }, 1000);
     return () => clearInterval(timer);
   }, []);
-
-  const handleTransactionSelect = (transaction: TransactionDetailType | null) => {
-    setSelectedTransaction(transaction);
-  };
-
-  const handleActionsSelect = (actions: TransactionActionsType | null) => {
-    setSelectedActions(actions);
-  };
 
   return (
     <div className="h-screen overflow-y-auto">
@@ -40,25 +29,19 @@ export default function DashboardPage() {
             </div>
           </div>
 
-          <MarketList />
+          <TrendingTokens />
 
-          <LastBlocks />
+          <div className="flex items-center justify-between">
+            <h2 className="text-xl font-semibold text-white">Recent Transactions</h2>
+          </div>
 
           <LastTransactions 
-            onTransactionSelect={handleTransactionSelect}
-            onActionsSelect={handleActionsSelect}
+            onTransactionSelect={setSelectedTransaction}
           />
 
-          {selectedTransaction && (
-            <>
-              <TransactionDetail
-                transaction={selectedTransaction}
-              />
-              <TransactionActions
-                actions={selectedActions}
-              />
-            </>
-          )}
+          <TransactionDetail
+            transaction={selectedTransaction}
+          />
         </div>
       </div>
     </div>
